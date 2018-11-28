@@ -1,0 +1,37 @@
+----------------Program------------------
+GOALS: allow user to make a maze and solve the maze with the program seeing the solution
+INPUT: input from user essentially saying what the walls will be
+OUTPUT: a solution to the maze
+STEPS:
+	1)
+
+______________Node.java____________________
+GOALS:
+INPUT:
+OUTPUT:
+STEPS:
+	1)
+
+
+
+
+
+
+______________Maze.java____________________
+GOALS:
+INPUT:
+OUTPUT:
+STEPS:
+	1)
+
+
+
+
+
+_____________GUI_Maze.java________________
+GOALS:
+INPUT:
+OUTPUT:
+STEPS:
+	1)
+
