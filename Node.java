@@ -38,20 +38,23 @@ public class Node extends JButton{
 	
 	void setFinish(boolean finish){
 		this.finish = finish;
+		this.setBackground(Color.BLUE);
 	}//end setFinish
 
 	boolean checkFinish(){
 		return this.finish;
 	}//end checkFinish
 
-	void setWall(){
-		this.wall = !this.wall;
-		if(this.wall){
-			this.setBackground(Color.BLACK);
-		}else{
-			this.setBackground(Color.WHITE);
-		}
-		this.setOpaque(true);	
+	void setWall(boolean wall){
+		if((this.checkFinish() == false) &&  (this.getCoordinates().equals("0, 0")==false)){ 
+			this.wall = wall;
+			if(this.wall){
+				this.setBackground(Color.BLACK);
+			}else{
+				this.setBackground(Color.WHITE);
+			}
+			this.setOpaque(true);
+		}	
 	}//end setWall	
 
 	public void setRed(){
@@ -68,8 +71,11 @@ public class Node extends JButton{
 
 	
 	void setCoordinates(int x, int y){
-		this.x = x;
-		this.y = y;
+		if (x == 0 && y == 0){
+			this.setBackground(Color.GREEN);
+		}
+			this.x = x;
+			this.y = y;
 	}//end setCoordiantes
 
 	String getCoordinates(){

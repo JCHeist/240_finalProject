@@ -44,7 +44,7 @@ public class Maze extends JFrame implements ActionListener{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 		this.setSize(640,480);
-}//end constructor
+	}//end constructor
 
 
 
@@ -81,14 +81,14 @@ public class Maze extends JFrame implements ActionListener{
 		for(int h = 0; h < this.height; h ++){
 			for(int w = 0; w < this.width; w ++){
 				if(e.getSource() == mazeWeb[w][h]){
-					mazeWeb[w][h].setWall();
+					mazeWeb[w][h].setWall(!mazeWeb[w][h].getWall());
 				}//end if get source of the buttons
 			}//end for w
 		}//end for h
 		
 		//remove path boxed if they are not walls
 		if(e.getSource() == solve){
-			visited = new ArrayList();
+			visited = new ArrayList<Node>();
 			int counter = 0;
 			this.finish = mazeWeb[this.width-1][this.height-1];		
 	//		timer.start();
@@ -107,7 +107,7 @@ public class Maze extends JFrame implements ActionListener{
 		}else if(e.getSource() == make){
 			clear_maze();			
 
-			make_maze(this.width, 0, this.height, 0, width - 1, 0);
+			make_maze();
 		}else if(e.getSource() == clear){
 			clear_maze();
 		}else if(e.getSource() == save){
@@ -139,7 +139,12 @@ public class Maze extends JFrame implements ActionListener{
 			for(int i = 0; i < this.width; i ++){
 				for(int j = 0; j < this.height; j ++){
 					if(mazeWeb[i][j].getWall()){
-						mazeWeb[i][j].setWall();
+						mazeWeb[i][j].setWall(false);
+					}else if(mazeWeb[i][j].checkFinish()){
+
+					}else if((mazeWeb[i][j].getCoordinates()).equals("0, 0")){
+
+
 					}else{
 						mazeWeb[i][j].setBackground(Color.WHITE);
 					}			
@@ -197,27 +202,18 @@ public class Maze extends JFrame implements ActionListener{
 		str = "                " + coords[0] + "                     \n" +
 				coords[2] + "             " + here.getCoordinates() + "           " + coords[3] + "\n" +
 			  "            " + coords[1] + "\n";
-		System.out.println(str);
-			
+		System.out.println(str);			
 	}//end showPlace
 
 
-	
+
 	public boolean solve(Node searching, List<Node> visited, int nodes_passed ){
 		nodes_passed = nodes_passed + 1;
 		visited.add(searching);
 		System.out.println(searching.getCoordinates());
 		searching.setGreen();
 
-/*	
-		try{
-			Thread.sleep(2000);
-			
-			searching.setBackground(Color.GREEN);
-		}catch(InterruptedException e){
-			e.printStackTrace();
-		}	
-*/	
+	
 
 		if(searching.getCoordinates().equals(this.finish.getCoordinates())){
 			solved = true;
@@ -263,7 +259,7 @@ public class Maze extends JFrame implements ActionListener{
 
 
 		
-	public boolean check_node(Node node, List visited){
+	public boolean check_node(Node node, List<Node> visited){
 		//check for null
 		if(node == null){
 			return false;
@@ -333,79 +329,203 @@ public class Maze extends JFrame implements ActionListener{
 				above[j].setDown(below[j]);	
 				
 				mazeWeb[j][i] = below[j];
-				//check to see if this is the finish		
+				//check to see if this is the finish (but only if it is the last row)
+				if(i == height - 1){
+					String coords = mazeWeb[j][i].getCoordinates();
+					String finish = String.valueOf(width - 1) + ", " + String.valueOf(height - 1);
+
+					if(coords.equals(finish)){
+						mazeWeb[j][i].setFinish(true);
+					}
+				}
 			}//end for j
 			//set above to equal below to make new row below this one to link
 			above = below.clone();
-		
+
 		}//end for i	
 	}//end makeGraph
 	
-
-
-	public void make_maze(int x_max, int x_min, int y_max, int y_min, int oldWidth, int oldHeight){
-		//select two random number in range
-		Random rand = new Random();
+	public boolean change_master_says_change(){
+//		Random rand = new Random(System.currentTimeMillis());
+//		int random = (rand.nextInt()) % 2;
 		
-		int mid_h = (y_max + y_min)/2;
-		int mid_w = (x_max + x_min)/2;
-
-		if((x_max - x_min) > 3){
-			for(int w = x_min - 1; w < x_max; w ++){
-				mazeWeb[w][mid_h].setWall();
-			}
-			for(int h = y_min - 1; h < y_max; h ++){
-				mazeWeb[mid_w][h].setWall();
-			}
-
+		int random;
+		random = (int)(Math.random() * 51 + 1) % 2;
+		
+	
+		if(random == 1){
+			return true;
 		}else{
-			for(int x = 0; x < (x_max - x_min); x ++){
+			return false;
+		}
+	}
+
+	public void make_maze(){
+		int height = this.height;
+		int newa[] = new int[width];
+		int key = 1;
+		String arr_string;
+
+		//assign a 0 or key to each spot to each spot
+		for(int a = 0; a < width; a = a + 2){
+			newa[a] = 0;
+			newa[a+1] = key;
+			key ++;
+			System.out.println(key);
+		}//end for i
+		
+		int temp[] = newa;
+
+		for(int i = 0; i < height; i ++){
+			int old_place = -1;
+			int old_place2 = -1;
+			int horz[] = temp;
+			//assign a 0 or key to each spot to each spot
+			for(int a = 0; a < width; a = a + 2){
+				horz[a] = 0;
+				if(horz[a + 1] == 0){
+					horz[a + 1] = key;
+					key ++;
+				}
+//				System.out.println(key);
+			}//end for i
+		
+		
+			
+
+			//horizontal rows
+			for(int look = 0; look < width; look =  look + 2){
+	
+				old_place = -1;
+				old_place2 = -1;
+
+				boolean deletable = false;
+				boolean checked = false;
+				if(look > 0){	
+					if(horz[look - 1] != horz[look + 1]){
+						if(change_master_says_change()){	
+							horz[look] = key;
+							old_place = horz[look+1];//store old value
+							horz[look+1] = key;
+							old_place2 = horz[look - 1];
+							horz[look - 1] = key;
+							
+							for(int change = 0; change < width; change++){
+								if(horz[change] == old_place || horz[change] == old_place2){
+									horz[change] = key;
+								}
+							}							
+						}//end contact to change master wizard dude... woo jokes
+					
+					}//end if			
+				}//end check for being greater than 0 
 				
-			}		
+			key ++;
+/*			
+
+				String horizontal = "h: ";
+				
+				for (int display_h = 0; display_h < width; display_h ++){
+					horizontal = horizontal + String.valueOf(horz[display_h]) + " ";
+				}
+				System.out.println(horizontal);
+	*/
+
 		}
 
-
-/*		
-		//getRandom height to draw line
-		int h = rand.nextInt(y_max-1) + y_min;
-		if(h == oldHeight){
-			h = h + 1;
-		}//end hblock check
 	
-		//get random width to draw line
-		int w = rand.nextInt(x_max-1) + x_min;
-		if(w == oldWidth){
-			w = w + 1;
-		}//end wblock check	
-		
-		for(int x = x_min; x < x_max; x ++){
-			if(!mazeWeb[x][h].getWall()){
-				mazeWeb[x][h].setWall();
-			}
-		}//end for x
+			//look at every index to see if the value was changed... if it was set the value to the new value
+			for(int change = 0; change < width;	change ++){
+
+				if(horz[change] == 0){
+					mazeWeb[change][i].setWall(true);
+				}		
+			}//end for change			
+			i++;
+	
+			//vertical rows
+			int vert[] = horz;
+			//assign a 0 or key to each spot to each spot
+			for(int a = 0; a < width; a = a + 2){
+				newa[a] = 0;
+//				System.out.println(key);
+			}//end for i
 			
-		for(int y = y_min; y < y_max; y ++){
-			if(!mazeWeb[w][y].getWall()){
-				mazeWeb[w][y].setWall();
+
+			if(i == this.height - 1){
+				for(int v = 1; v < width - 2 ; v = v + 2){
+					boolean exists_in_last_row = true;
+					if(vert[v] != vert[v + 2]){
+						vert[v + 1] = 1;
+					}
+					
+					if(exists_in_last_row){
+				
+					}else{
+						vert[v + 1] = vert[v];
+						vert[v + 2] = vert[v];
+					}
+				}
+				
+			}else{
+	
+	 			String vetical = "v: "; 
+	
+				for(int v = 1; v < width; v = v + 2){
+					boolean make_wall = false;
+					
+					make_wall = vertical_check(vert, v);
+	
+					if(make_wall){
+						vert[v] = 0;
+					}
+				}//end for v
 			}
-		}//end for y
-
-//		mazeWeb[w][h].setWall();//flip middle node back to wall
-		
-		int spotL = w;
-		int spotR = w;
-		int spotT = h;
-		int spotB = h;
-
-		mazeWeb[spotL][h].setWall();		
-		mazeWeb[spotR][h].setWall();
-		mazeWeb[w][spotT].setWall();
-		mazeWeb[w][spotB].setWall();
-
-		make_maze(w, x_min, h, y_min, w, h);		
-		make_maze(x_max, w, h, y_min, w, h);
-		make_maze(w, x_min, y_max, h, w, h);
-		make_maze(x_max, w, y_max, h, w, h);
-*/
+			for(int change = 0; change < width; change ++){
+				if(vert[change] == 0){
+					mazeWeb[change][i].setWall(true);
+				}
+			}
+		temp = vert;
+			
+		}
 	}//end make maze	
+
+
+
+	private boolean vertical_check(int arr[], int this_index){
+		boolean change_this = false;
+
+		for(int look = 1; look < this.width; look = look + 2){
+			//check all indexes to see if another key like this key exists
+				if(look != this_index){
+					if(arr[look] == arr[this_index]){	
+						if(change_master_says_change()){
+							change_this = true;
+						}//end get random value
+					}//end check to see if theres an index equal to this
+				}//end check to make sure not same index
+
+		}//end for look
+
+		return change_this;
+
+	}//end vertical check	
+
 }//end maze class def
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

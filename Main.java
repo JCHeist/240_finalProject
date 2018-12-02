@@ -3,8 +3,10 @@ import java.util.*;
 public class Main{
 
 	public static void main(String[] args){
+
+
 	
-		Maze maze = new Maze(16,16);
+		Maze maze = new Maze(160, 160);
 
 		Scanner in = new Scanner(System.in);
 
