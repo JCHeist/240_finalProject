@@ -1,37 +1,175 @@
+RUNNING THE PROGRAM: I developed the app in my mac terminal. Any java environment that has the capabilities to run a swing GUI should work. nothing super fancy. Just type make run. If you would like to generate a maze at the beginning youll need to change the constructor in GUI_Maze. Height and width have to be even for my maze generation algorithm. manually you should be able to create a maze though of odd numbers. I didnt have time to get odds working or a make maze function. Make maze function in GUI_Maze would have looked a lot like the load process thuogh just take input for height and width from the user. dediated time elsewhere
+
+
+FOR MORE INFO ON FUNCTION SPECIFICS, LOOK IN THE FILES. MORE DETAILED DESCRIPTION IN COMMENTS FOR PROGRAM
+
+
+Honestly I am pretty pround of what happened here. I feel like I have a much better graph of inheritance and though I didnt use it as a main aspect of my program extending JButton was a pretty fun way to use it. Nodes arent that hard either. Much easier than I have always thought about them. I was really excited to learn recursion and my solve function uses it well. This was really fun.
+
 ----------------Program------------------
 GOALS: allow user to make a maze and solve the maze with the program seeing the solution
 INPUT: input from user essentially saying what the walls will be
 OUTPUT: a solution to the maze
 STEPS:
-	1)
-
+	1) allow user to manually make a maze or generate one randomly and solve it
+	2) user can select a maze from a file
+	3) user can save the maze and clear the maze also
 ______________Node.java____________________
-GOALS:
-INPUT:
-OUTPUT:
+GOALS:save data for each node
+INPUT:none
+OUTPUT:none
 STEPS:
-	1)
-
-
-
-
-
+	1)extend JButton to make it easy to display these nodes
+	2)set properties of JButton to make it display squares with just background
+	
+setters and getters for variables defined
+	wall and finish
+		GOALS:set value of boolean variable to correct value and change color asdesired
+		INPUT:boolean
+		OUTPUT:none
+		STEPS:set value of wall or finish to boolean value indicated in parameters
+			-change color to black if you set wall to true and wall to while if you set it to false
+			-if finish is true make that node's color blue
 
 ______________Maze.java____________________
-GOALS:
-INPUT:
-OUTPUT:
+GOALS:solve or create a randomly generated maze
+INPUT:int width, int height
+OUTPUT:none
 STEPS:
 	1)
 
+clearMaze()
+GOALS:clear the maze
+INPUT: none	
+OUTPUT:noen
+STEPS:
+	1)go through each node in a nested for loop
+	2)set all walls to not walls
+	3)set finsih to be blue
+	4)set start to be green
+
+traverse()for testing
+GOALS:set current node to neew node based off of parameter passed in (u,d,l,r)
+INPUT:String u,d,l,r
+OUTPUT:none
+STEPS:
+	1)set current node to node in the direction indicated by the string
+
+showPlace()for testing
+GOALS:show coordinates of nodes
+INPUT:node to print coordinates of and around
+OUTPUT:none
+STEPS:
+	1)print current node coordinates and nodes around it
+
+startSolve()
+GOALS: start solve
+INPUT:	none
+OUTPUT:none
+STEPS:
+	1)create necessary variable for solve function
+	2)call solve function at the start (always (0,0))
+
+solve()
+GOALS:recursively look for an open node
+INPUT:(node youre looking from, List of visited nodes, int to show the amount of nodes passed in this path)
+OUTPUT:boolean
+STEPS:
+	1)check to see if this nodes corrdinates is the finish (bottom right corner)
+	2)call the solve function on the node to the right if you can, the bottom one if you can, the top one if you can, the left one if you can. Only check nodes though if the maze is not solved(to check call the check node function)
+	3)when you leave the function, change the color to red if this is checked but is not part of the solution. green if it part of the solution
+
+check_node()
+GOALS:check node to see if you cna move to it
+INPUT:node and list of visited nodes in path
+OUTPUT:boolean
+STEPS:
+	1)chekck to see if this node is null, a wall or already visited(lookin the list of visited nodes passed in)
+	2)return true unless, this node is null, a wall, or visited
 
 
+makeGraph()
+GOALS:make a graph that is the size of the width and hight
+INPUT:width and height of maze entered into constructor
+OUTPUT:make a graph of clickable nodes
+STEPS:
+	1)make strips(arrays) of nodes that are as wides as the width
+	2)make as many strips as are the height in the maze 
+	3)link all of the nodes in the strips next to each other and link the strips on top of each other giving the node references
+	4)for each node you make also add it to the maze web which is an array of the nodes, this helps with making the GUI makes referencing them easy
 
+change_master_says_change
+GOALS:generate a random true or false
+INPUT:none
+OUTPUT:boolean
+STEPS:
+	1)generate a random true or false to be used in maze generation
+
+
+makeMaze()
+GOALS:make a randomly generated maze using ellers algorithm
+INPUT:none (only works for mazes of even height
+OUTPUT:changes some nodes to be walls
+STEPS:
+	1) horizontal rows
+		a)look at the first row and randomly remove walls in between paths... change all keys to the path that the key is merged with. 
+		b)check for any other keys that are equal to the old key. change thos to the new keys too
+		c)to randomly do this, call change mastersays change
+
+
+	2)veritcal row
+		a)check to see if this is the last row. if it is remove all walls that are in between paths with non unique keys this will be done in vetical_check() (below)
+		b)if it is not the last row, see if you want to delete the wall. if you do, change id in array to be 0. 0 means wall
+		
+	3)for both situations onece you have the keys make a wall in the nodes that are in the maze web at that height adn width. walls will be made where 0's are
+	4)following ellers algorithm, bring downt he key values
+
+
+vertical_check()
+GOALS:check rest of the row to make sure there are multiple ids that are the same here 
+INPUT:array and this index
+OUTPUT:boolean
+STEPS:
+	1)make sure yo uare able to block this index off by checking if there are other keys like this in the row
+	2)check to see if you want to randomly block this off
+	3)return decision if applicable
 
 _____________GUI_Maze.java________________
-GOALS:
+GOALS:handle showing maze
+INPUT:get info from the Maze maze
+OUTPUT:	GUI
+STEPS:
+	1)get info from maze and set up GUI with menu at the bottom
+
+
+Constructor
+GOALS:make GUI
 INPUT:
 OUTPUT:
 STEPS:
-	1)
+	1)set up maze in center of lay out and menu on the botom
+
+
+
+ActionListener()
+GOALS:do what the action says
+INPUT:action e
+OUTPUT:changes button and does what is says
+STEPS:
+	1)if a wall is clicked change the wall to the opposite wall
+	2)solve if solved is clicked
+	3)clear
+	4)load or save (once the maze gets too big these don't work. I believe this is due to the ability to serialize panels and JButtons. making it expandable beyond somewhere around 1000 nodes in a panel will take more figuring out)
+
+initialize maze()
+GOALS:get new mazeweb from maze
+INPUT:remove everything from GUI
+OUTPUT:
+STEPS:
+	1)remove old nodes form mazeweb and get new mazeweb from the maze you currently have set as maze
+	2)also refresh the view with repaint and revalidate as well as setVisible (though I do this outside of the function it is important that they are done around calling this funciton
+
+
+
+
 
