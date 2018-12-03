@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Maze{
+public class Maze implements Serializable{
 		
 		//declare variables for head andGUI
 		Node start = new Node();
@@ -20,7 +20,7 @@ public class Maze{
 		int height;
 
 
-	
+	//create maze and set widht and height	
 	public Maze(int width, int height){
 		makeGraph(current, width, height);
 		this.height = height;
@@ -50,6 +50,8 @@ public class Maze{
 		this.solved = s;
 	}//end setSolved
 	
+
+	//delete walls and paths made
 	public void clear_maze(){
 
 			for(int i = 0; i < this.width; i ++){
@@ -93,7 +95,7 @@ public class Maze{
 	}//end transverse()
 		
 
-
+	//for testing and possible dungeon craweler type function
 	public void showPlace(Node here){
 		
 		String str = new String();
@@ -128,54 +130,59 @@ public class Maze{
 		
 	}
 
+	//recursive solve function
 	public boolean solve(Node searching, List<Node> visited, int nodes_passed ){
 		nodes_passed = nodes_passed + 1;
 		visited.add(searching);
 		System.out.println(searching.getCoordinates());
 		searching.setGreen();
-
-	
-
+		
+		//check for finish
 		if((searching.getCoordinates()).equals(this.finish.getCoordinates())){
 			solved = true;
 		}
 
+		//look right
 		if(solved == false){
 			if(check_node(searching.getRight(), visited)){
 				solved = solve(searching.getRight(), visited, nodes_passed);
 			}
 		}
-	
+		
+		//look down
 		if(solved == false){
 			if(check_node(searching.getDown(), visited)){
 				solved = solve(searching.getDown(), visited, nodes_passed);
 			}
 		}
 	
+		//look up
 		if(solved == false){
-			//look up
 			if(check_node(searching.getUp(), visited)){
 				solved = solve(searching.getUp(), visited, nodes_passed);
 			}
 		}
 
+		//look left
 		if(solved == false){
 			if(check_node(searching.getLeft(), visited)){
 				solved = solve(searching.getLeft(), visited, nodes_passed);
 			}
 		}
 		
+		//if this node is visited and not part of the solution, turn it red, otherwise keep it green
 		if(solved == false){
 			searching.setRed();
 		}else{
 			searching.setGreen();
 		}
 		
+		//return this to recursive function that called this
 		return solved;
 	}//end solve
 
 
-		
+	//check node used by solve to make sure wall is not there
 	private boolean check_node(Node node, List<Node> visited){
 		//check for null
 		if(node == null){
@@ -260,7 +267,8 @@ public class Maze{
 		}//end for i	
 	}//end makeGraph
 	
-	public boolean change_master_says_change(){
+	//returns a true or false value for the maze generation
+	private boolean change_master_says_change(){
 		
 		int random;
 		random = (int)(Math.random() * 51 + 1) % 2;
@@ -306,20 +314,19 @@ public class Maze{
 
 			//horizontal rows
 			for(int look = 0; look < width; look =  look + 2){
-	
+				//variales to store old key values so all can be changed to new value when merged... set to -1 at beginning of loop because no key will ever be -1
 				old_place = -1;
 				old_place2 = -1;
 
-				boolean deletable = false;
-				boolean checked = false;
+				
 				if(look > 0){	
 					if(horz[look - 1] != horz[look + 1]){
-						if(change_master_says_change()){	
+						if(change_master_says_change()){	//get ture of false to randomly decide wall
 							horz[look] = key;
 							old_place = horz[look+1];//store old value
-							horz[look+1] = key;
+							horz[look+1] = key;//new key for cells to be merged
 							old_place2 = horz[look - 1];
-							horz[look - 1] = key;
+							horz[look - 1] = key;//same new key
 							
 							for(int change = 0; change < width; change++){
 								if(horz[change] == old_place || horz[change] == old_place2){
@@ -351,29 +358,21 @@ public class Maze{
 				newa[a] = 0;
 			}//end for i
 			
-
+			//check for last row
+			//look at wall and compare paths next to wall
 			if(i == this.height - 1){
 				for(int v = 1; v < width - 2 ; v = v + 2){
-					boolean exists_in_last_row = true;
 					if(vert[v] != vert[v + 2]){
-						vert[v + 1] = 1;
-					}
-					
-					if(exists_in_last_row){
-				
-					}else{
-						vert[v + 1] = vert[v];
-						vert[v + 2] = vert[v];
+						vert[v + 1] = -1;
 					}
 				}
 				
 			}else{
 	
-	 			String vetical = "v: "; 
-	
 				for(int v = 1; v < width; v = v + 2){
 					boolean make_wall = false;
 					
+					//if it is ok to make a wall here and change master said yes.. change it
 					make_wall = vertical_check(vert, v);
 	
 					if(make_wall){
@@ -386,12 +385,13 @@ public class Maze{
 					mazeWeb[change][i].setWall(true);
 				}
 			}
+			//store values to bring down key values to next row
 			temp = vert;
 		}
 	}//end make maze	
 
 
-
+	//used by maze generator for vertical rows
 	private boolean vertical_check(int arr[], int this_index){
 		boolean change_this = false;
 

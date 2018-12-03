@@ -17,6 +17,8 @@ public class Node extends JButton{
 
 
 	public Node(){
+
+		//set up visual aspects of buttons
 		super();		
         setBorder(null);
         setBorderPainted(false);
@@ -46,6 +48,7 @@ public class Node extends JButton{
 	}//end checkFinish
 
 	void setWall(boolean wall){
+		//set wall if it is not the finish or end
 		if((this.checkFinish() == false) &&  (this.getCoordinates().equals("0, 0")==false)){ 
 			this.wall = wall;
 			if(this.wall){
@@ -57,10 +60,12 @@ public class Node extends JButton{
 		}	
 	}//end setWall	
 
+	//for maze solving visual
 	public void setRed(){
 		setBackground(Color.RED);
 	}
 	
+	//for mae solving visual
 	public void setGreen(){
 		setBackground(Color.GREEN);
 	}
@@ -78,6 +83,7 @@ public class Node extends JButton{
 			this.y = y;
 	}//end setCoordiantes
 
+	//return x and y coorinates in a string
 	String getCoordinates(){
 		String xy = new String();
 		
