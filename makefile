@@ -1,6 +1,6 @@
-Main.class:
-	javac Main.java
+GUI_Maze.class:
+	javac GUI_Maze.java
 clean:
 	rm -f *.class
-run: Main.class
-	java Main
+run: GUI_Maze.class
+	java GUI_Maze

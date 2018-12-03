@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Maze extends JFrame implements ActionListener{
+public class Maze{
 		
 		//declare variables for head andGUI
 		Node start = new Node();
@@ -16,124 +16,40 @@ public class Maze extends JFrame implements ActionListener{
 		Node finish;
 		List<Node> visited;
 		boolean solved;
-
-		//store width and height to be used in program
 		int width;
 		int height;
-		
-		JPanel mazeGUI = new JPanel();
-		JPanel move = new JPanel();
-		
-		JButton solve = new JButton("Solve");		
-		JButton make = new JButton("Make Maze");
-		JButton clear = new JButton("Clear");
-		JButton save = new JButton("Save");
-		JButton load = new JButton("Load");	
 
-//		Timer timer = new Timer(100000000,this);	
+
 	
 	public Maze(int width, int height){
-		makeGraph(current, width, height);		
-
-		//store height and width variables
+		makeGraph(current, width, height);
+		this.height = height;
 		this.width = width;
-		this.height = height;		
 
-		//gui setup
-		this.setUpGUI();
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setVisible(true);
-		this.setSize(640,480);
-	}//end constructor
+	}
+	
+	public void setFinish(Node f){
+		this.finish = f;
+	}
 
 
+	public Node[][] getMazeWeb(){
+		return this.mazeWeb;	
+	}
 
-	public void setUpGUI(){
-		Container pnlMain = this.getContentPane();
-		mazeGUI.setLayout(new GridLayout(width, height,1,1));
+	public int getHeight(){
+		return this.height;
+	}
+	
+	public int getWidth(){
+		return this.width;
 
+	}
 
-		for(int h = 0; h < this.height; h ++){
-			for(int w = 0; w < this.width; w ++){
-				mazeGUI.add(mazeWeb[w][h]);//add node to web
-				mazeWeb[w][h].addActionListener(this);//add action listener
-			}//end for w
-		}//end for h
-
-		move.add(clear);
-		move.add(solve);
-		move.add(make);
-		move.add(save);
-		move.add(load);		
-		
-		clear.addActionListener(this);
-		solve.addActionListener(this);
-		make.addActionListener(this);		
-		save.addActionListener(this);
-
-		pnlMain.add(mazeGUI, BorderLayout.CENTER);
-		pnlMain.add(move, BorderLayout.SOUTH);
-	}//end setUpGUI
-
-
-
-	public void actionPerformed(ActionEvent e){
-		for(int h = 0; h < this.height; h ++){
-			for(int w = 0; w < this.width; w ++){
-				if(e.getSource() == mazeWeb[w][h]){
-					mazeWeb[w][h].setWall(!mazeWeb[w][h].getWall());
-				}//end if get source of the buttons
-			}//end for w
-		}//end for h
-		
-		//remove path boxed if they are not walls
-		if(e.getSource() == solve){
-			visited = new ArrayList<Node>();
-			int counter = 0;
-			this.finish = mazeWeb[this.width-1][this.height-1];		
-	//		timer.start();
-			for(int i = 0; i < this.width; i ++){
-				for(int j = 0; j < this.height; j ++){
-					if(mazeWeb[i][j].getWall() == false){
-						mazeWeb[i][j].setBackground(Color.WHITE);
-					}//end change if not wall
-				}//enf for j
-			}//end for i
-		
-			this.solved = false;			
-			solve(this.start, visited, counter);
-				
-	//		timer.stop();
-		}else if(e.getSource() == make){
-			clear_maze();			
-
-			make_maze();
-		}else if(e.getSource() == clear){
-			clear_maze();
-		}else if(e.getSource() == save){
-			String path = JOptionPane.showInputDialog("What would you like to save this maze as?");
-			
-			try{	
-				FileOutputStream fOS = new FileOutputStream("Saved_Mazes/" + path + ".dat");
-				ObjectOutputStream oOS = new ObjectOutputStream(fOS);
-			}catch (Exception error){
-				System.out.println(error.getMessage());
-			}
-			
-		}else if(e.getSource() == load){
-			try { 
-				FileInputStream fInS = new FileInputStream("animation.dat"); 
-				ObjectInputStream obInS = new ObjectInputStream(fInS); 
-				this.start = (Node)obInS.readObject(); 
-				this.current = start; 
-			} catch (Exception error){ 
-				System.out.println(error.getMessage()); 
-			} // end try 
-		}
-	}//end ActionEvent
-
-
-
+	public void setSolved(boolean s){
+		this.solved = s;
+	}//end setSolved
+	
 	public void clear_maze(){
 
 			for(int i = 0; i < this.width; i ++){
@@ -141,9 +57,9 @@ public class Maze extends JFrame implements ActionListener{
 					if(mazeWeb[i][j].getWall()){
 						mazeWeb[i][j].setWall(false);
 					}else if(mazeWeb[i][j].checkFinish()){
-
+						mazeWeb[i][j].setBackground(Color.BLUE);
 					}else if((mazeWeb[i][j].getCoordinates()).equals("0, 0")){
-
+						mazeWeb[i][j].setGreen();
 
 					}else{
 						mazeWeb[i][j].setBackground(Color.WHITE);
@@ -205,7 +121,12 @@ public class Maze extends JFrame implements ActionListener{
 		System.out.println(str);			
 	}//end showPlace
 
-
+	public void startSolve(){
+		visited = new ArrayList<Node>();	
+		int counter = 0;
+		solve(mazeWeb[0][0], visited, counter);
+		
+	}
 
 	public boolean solve(Node searching, List<Node> visited, int nodes_passed ){
 		nodes_passed = nodes_passed + 1;
@@ -215,26 +136,23 @@ public class Maze extends JFrame implements ActionListener{
 
 	
 
-		if(searching.getCoordinates().equals(this.finish.getCoordinates())){
+		if((searching.getCoordinates()).equals(this.finish.getCoordinates())){
 			solved = true;
 		}
 
 		if(solved == false){
-//			timer.start();
 			if(check_node(searching.getRight(), visited)){
 				solved = solve(searching.getRight(), visited, nodes_passed);
 			}
 		}
 	
 		if(solved == false){
-//			timer.start();
 			if(check_node(searching.getDown(), visited)){
 				solved = solve(searching.getDown(), visited, nodes_passed);
 			}
 		}
 	
 		if(solved == false){
-//			timer.start();
 			//look up
 			if(check_node(searching.getUp(), visited)){
 				solved = solve(searching.getUp(), visited, nodes_passed);
@@ -242,7 +160,6 @@ public class Maze extends JFrame implements ActionListener{
 		}
 
 		if(solved == false){
-//			timer.start();
 			if(check_node(searching.getLeft(), visited)){
 				solved = solve(searching.getLeft(), visited, nodes_passed);
 			}
@@ -259,7 +176,7 @@ public class Maze extends JFrame implements ActionListener{
 
 
 		
-	public boolean check_node(Node node, List<Node> visited){
+	private boolean check_node(Node node, List<Node> visited){
 		//check for null
 		if(node == null){
 			return false;
@@ -278,8 +195,6 @@ public class Maze extends JFrame implements ActionListener{
 		return true;
 	}//end check_node
 	
-
-
 
 	public void makeGraph(Node start, int width, int height){
 		Node above[] = new Node[width];
@@ -346,8 +261,6 @@ public class Maze extends JFrame implements ActionListener{
 	}//end makeGraph
 	
 	public boolean change_master_says_change(){
-//		Random rand = new Random(System.currentTimeMillis());
-//		int random = (rand.nextInt()) % 2;
 		
 		int random;
 		random = (int)(Math.random() * 51 + 1) % 2;
@@ -387,11 +300,9 @@ public class Maze extends JFrame implements ActionListener{
 					horz[a + 1] = key;
 					key ++;
 				}
-//				System.out.println(key);
 			}//end for i
 		
 		
-			
 
 			//horizontal rows
 			for(int look = 0; look < width; look =  look + 2){
@@ -415,21 +326,11 @@ public class Maze extends JFrame implements ActionListener{
 									horz[change] = key;
 								}
 							}							
-						}//end contact to change master wizard dude... woo jokes
-					
+						}//end contact to change master wizard dude... woo jokes	
 					}//end if			
 				}//end check for being greater than 0 
 				
 			key ++;
-/*			
-
-				String horizontal = "h: ";
-				
-				for (int display_h = 0; display_h < width; display_h ++){
-					horizontal = horizontal + String.valueOf(horz[display_h]) + " ";
-				}
-				System.out.println(horizontal);
-	*/
 
 		}
 
@@ -448,7 +349,6 @@ public class Maze extends JFrame implements ActionListener{
 			//assign a 0 or key to each spot to each spot
 			for(int a = 0; a < width; a = a + 2){
 				newa[a] = 0;
-//				System.out.println(key);
 			}//end for i
 			
 
@@ -486,8 +386,7 @@ public class Maze extends JFrame implements ActionListener{
 					mazeWeb[change][i].setWall(true);
 				}
 			}
-		temp = vert;
-			
+			temp = vert;
 		}
 	}//end make maze	
 
@@ -505,27 +404,8 @@ public class Maze extends JFrame implements ActionListener{
 						}//end get random value
 					}//end check to see if theres an index equal to this
 				}//end check to make sure not same index
-
 		}//end for look
-
 		return change_this;
-
 	}//end vertical check	
 
 }//end maze class def
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
